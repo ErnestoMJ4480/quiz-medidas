@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz de Medidas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <style>
+    /* tu estilo CSS aquí (igual al que ya usas) */
+body {
+      font-family: sans-serif;
+      padding: 20px;
+      text-align: center;
+      background: #f2f2f2;
+    }
+    .quiz-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      margin: 0 auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .option {
+      padding: 10px 20px;
+      margin: 10px 0;
+      background: #eee;
+      border: none;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .option:hover {
+      background: #ddd;
+    }
+    .result {
+      font-weight: bold;
+      font-size: 20px;
+      margin-top: 20px;
+    }
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- tu contenido y JavaScript aquí (igual que el quiz anterior) -->
+
+  <div class="quiz-container">
+    <div class="question" id="pregunta"></div>
+    <div id="opciones"></div>
+    <div class="result" id="resultado"></div>
+    <button class="next-btn" id="siguiente" onclick="siguientePregunta()">Siguiente</button>
+  </div>
+
+  <script>
+    const preguntas = [
+      { pregunta: "¿Cuántos cm tiene 1 metro?", correcta: "100 cm" },
+      { pregunta: "¿Cuántos cm tiene 1/2 metro?", correcta: "50 cm" },
+      { pregunta: "¿Cuántos cm tiene 1/4 metro?", correcta: "25 cm" },
+      { pregunta: "¿Cuántos ml tiene 1 litro?", correcta: "1000 ml" },
+      { pregunta: "¿Cuántos ml tiene 1/2 litro?", correcta: "500 ml" },
+      { pregunta: "¿Cuántos ml tiene 1/4 litro?", correcta: "250 ml" },
+      { pregunta: "¿Cuántos gramos tiene 1 kg?", correcta: "1000 gr" },
+      { pregunta: "¿Cuántos gramos tiene 1/2 kg?", correcta: "500 gr" },
+      { pregunta: "¿Cuántos gramos tiene 1/4 kg?", correcta: "250 gr" }
+    ];
+
+    const opcionesPosibles = [
+      "100 cm", "50 cm", "25 cm",
+      "1000 ml", "500 ml", "250 ml",
+      "1000 gr", "500 gr", "250 gr"
+    ];
+
+    let indice = 0;
+    let puntaje = 0;
+
+    function mostrarPregunta() {
+      const preguntaActual = preguntas[indice];
+      document.getElementById("resultado").textContent = "";
+      document.getElementById("siguiente").style.display = "none";
+
+      document.getElementById("pregunta").textContent = preguntaActual.pregunta;
+
+      const opciones = new Set([preguntaActual.correcta]);
+      while (opciones.size < 3) {
+        const aleatoria = opcionesPosibles[Math.floor(Math.random() * opcionesPosibles.length)];
+        opciones.add(aleatoria);
+      }
+
+      const opcionesArray = Array.from(opciones).sort(() => Math.random() - 0.5);
+      const contenedor = document.getElementById("opciones");
+      contenedor.innerHTML = "";
+
+      opcionesArray.forEach(opcion => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = opcion;
+        btn.onclick = () => evaluarRespuesta(opcion, preguntaActual.correcta);
+        contenedor.appendChild(btn);
+      });
+    }
+
+    function evaluarRespuesta(seleccionada, correcta) {
+      const resultado = document.getElementById("resultado");
+      if (seleccionada === correcta) {
+        resultado.textContent = "✅ ¡Correcto!";
+        resultado.style.color = "green";
+        puntaje++;
+      } else {
+        resultado.textContent = `❌ Incorrecto. La respuesta era: ${correcta}`;
+        resultado.style.color = "red";
+      }
+
+      document.querySelectorAll(".option").forEach(btn => btn.disabled = true);
+      document.getElementById("siguiente").style.display = "inline-block";
+    }
+
+    function siguientePregunta() {
+      indice++;
+      if (indice < preguntas.length) {
+        mostrarPregunta();
+      } else {
+        document.querySelector(".quiz-container").innerHTML =
+          `<h2>¡Quiz terminado!</h2><p>Obtuviste ${puntaje} de ${preguntas.length} correctas.</p>`;
+      }
+    }
+
+    mostrarPregunta();
+  </script>
+
+</body>
+</html>
